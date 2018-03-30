@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 using FileSystemExtensions;
 using System.IO;
+using System.Diagnostics;
 
 namespace DirSize
 {
@@ -86,7 +87,8 @@ namespace DirSize
             }
             finally
             {
-                WriteResultsToFile();
+                string reportFile = WriteResultsToFile();
+                Process.Start(reportFile);
             }
         }
 
@@ -112,7 +114,7 @@ namespace DirSize
                 selectedDirectory.Contains(directory)));
         }
 
-        private void WriteResultsToFile()
+        private string WriteResultsToFile()
         {
             string fileName;
             int index = 0;
@@ -139,6 +141,7 @@ namespace DirSize
 
             MessageBox.Show(string.Format("Results written to: {0}", fileName));
             currentFile = null;
+            return fileName;
         }
 
         private void timer1_Tick(object sender, EventArgs e)
