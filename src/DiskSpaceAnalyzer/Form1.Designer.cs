@@ -45,7 +45,7 @@
             this.analyzeButton.TabIndex = 0;
             this.analyzeButton.Text = "Analyze folder...";
             this.analyzeButton.UseVisualStyleBackColor = true;
-            this.analyzeButton.Click += new System.EventHandler(this.button1_Click);
+            this.analyzeButton.Click += new System.EventHandler(this.analyzeButton_Click);
             // 
             // scannerWorker
             // 

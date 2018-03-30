@@ -53,7 +53,7 @@ namespace DirSize
             timer1.Enabled = true;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void analyzeButton_Click(object sender, EventArgs e)
         {
             selectedDirectory = null;
             currentFile = null;
