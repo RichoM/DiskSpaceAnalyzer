@@ -7,8 +7,8 @@
     <ProjectGuid>{73F92D95-4444-43D9-BCCD-676BD9A21CAE}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DirSize</RootNamespace>
-    <AssemblyName>DirSize</AssemblyName>
+    <RootNamespace>DiskSpaceAnalyzer</RootNamespace>
+    <AssemblyName>DiskSpaceAnalyzer</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
