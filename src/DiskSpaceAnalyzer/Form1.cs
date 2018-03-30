@@ -99,7 +99,7 @@ namespace DirSize
                 {
                     entries[directory.FullName] = new DirectoryEntry()
                     {
-                        Directory = file.Directory,
+                        Directory = directory,
                         Length = 0
                     };
                 }
