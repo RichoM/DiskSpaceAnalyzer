@@ -57,6 +57,7 @@ namespace DirSize
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            Text = string.Format("Disk Space Analyzer v{0}", Application.ProductVersion);
             updateTimer.Enabled = true;
         }
 
