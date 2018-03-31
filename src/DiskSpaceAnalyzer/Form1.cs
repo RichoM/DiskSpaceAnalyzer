@@ -126,7 +126,7 @@ namespace DirSize
 
             using (StreamWriter writer = new StreamWriter(fileName, false))
             {
-                writer.WriteLine("directory,size (bytes),size (kB),size (MB), size (GB)");
+                writer.WriteLine("directory,size (bytes),size (kB),size (MB),size (GB)");
                 foreach (DirectoryEntry entry in entries.Values.OrderByDescending(each => each.Length).ToArray())
                 {
                     writer.WriteLine(string.Format("{0},{1},{2},{3},{4}",
