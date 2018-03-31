@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using FileSystemExtensions;
 using System.IO;
 using System.Diagnostics;
+using System.Collections.Concurrent;
 
 namespace DirSize
 {
@@ -22,6 +23,10 @@ namespace DirSize
         {
             public DirectoryInfo Directory { get; set; }
             public long Length { get; set; }
+
+            public double LengthKb { get { return Length / 1024.0; } }
+            public double LengthMb { get { return LengthKb / 1024.0; } }
+            public double LengthGb { get { return LengthMb / 1024.0; } }
 
             public string DirectoryCSVName
             {
@@ -47,11 +52,12 @@ namespace DirSize
         private DirectoryInfo selectedDirectory;
         private FileInfo currentFile;
         private long fileCount;
-        private Dictionary<string, DirectoryEntry> entries;
+        private ConcurrentDictionary<string, DirectoryEntry> entries;
+        private bool dirtyGrid = false;
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            timer1.Enabled = true;
+            updateTimer.Enabled = true;
         }
 
         private void analyzeButton_Click(object sender, EventArgs e)
@@ -59,7 +65,7 @@ namespace DirSize
             selectedDirectory = null;
             currentFile = null;
             fileCount = 0;
-            entries = new Dictionary<string, DirectoryEntry>(StringComparer.OrdinalIgnoreCase);
+            entries = new ConcurrentDictionary<string, DirectoryEntry>(StringComparer.OrdinalIgnoreCase);
             FolderBrowserDialog dialog = new FolderBrowserDialog();
             dialog.ShowDialog();
             if (Directory.Exists(dialog.SelectedPath))
@@ -80,6 +86,7 @@ namespace DirSize
                     try
                     {
                         UpdateEntriesFor(file);
+                        dirtyGrid = true;
                     }
                     catch { /* Ignore */ }
                     if (scannerWorker.CancellationPending) break;
@@ -87,6 +94,7 @@ namespace DirSize
             }
             finally
             {
+                dirtyGrid = true;
                 string reportFile = WriteResultsToFile();
                 Process.Start(reportFile);
             }
@@ -132,9 +140,9 @@ namespace DirSize
                     writer.WriteLine(string.Format("{0},{1},{2},{3},{4}",
                         entry.DirectoryCSVName,
                         entry.Length,
-                        entry.Length / 1024.0,
-                        entry.Length / 1024.0 / 1024.0,
-                        entry.Length / 1024.0 / 1024.0 / 1024.0));
+                        entry.LengthKb,
+                        entry.LengthMb,
+                        entry.LengthGb));
                 }
                 writer.Flush();
             }
@@ -144,7 +152,7 @@ namespace DirSize
             return fileName;
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+        private void updateTimer_Tick(object sender, EventArgs e)
         {
             entryCountLabel.Text = string.Format("Files: {0}, Folders: {1}", fileCount, entries != null ? entries.Count : 0);
             if (currentFile == null)
@@ -157,6 +165,19 @@ namespace DirSize
             }
             analyzeButton.Enabled = !scannerWorker.IsBusy;
             stopButton.Enabled = scannerWorker.IsBusy && !scannerWorker.CancellationPending;
+
+            if (dirtyGrid)
+            {
+                dirtyGrid = false;
+
+                if (entries != null)
+                {
+                    foldersGrid.DataSource = entries.Values
+                        .OrderByDescending(each => each.Length)
+                        .Take(100)
+                        .ToArray();
+                }
+            }
         }
 
         private void stopButton_Click(object sender, EventArgs e)
