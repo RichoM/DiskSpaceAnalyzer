@@ -164,8 +164,10 @@ namespace DirSize
             {
                 currentFile.SafeFullNameDo(name => currentFileLabel.Text = name);
             }
-            analyzeButton.Enabled = !scannerWorker.IsBusy;
+            startButton.Enabled = !scannerWorker.IsBusy;
             stopButton.Enabled = scannerWorker.IsBusy && !scannerWorker.CancellationPending;
+            folderTextBox.Enabled = !scannerWorker.IsBusy;
+            exclusionsTextBox.Enabled = !scannerWorker.IsBusy;
 
             if (dirtyGrid)
             {
@@ -184,6 +186,19 @@ namespace DirSize
         private void stopButton_Click(object sender, EventArgs e)
         {
             scannerWorker.CancelAsync();
+        }
+
+        private void startButton_Click(object sender, EventArgs e)
+        {
+            selectedDirectory = null;
+            currentFile = null;
+            fileCount = 0;
+            entries = new ConcurrentDictionary<string, DirectoryEntry>(StringComparer.OrdinalIgnoreCase);
+            if (Directory.Exists(folderTextBox.Text))
+            {
+                selectedDirectory = new DirectoryInfo(folderTextBox.Text);
+                scannerWorker.RunWorkerAsync();
+            }
         }
     }
 }
