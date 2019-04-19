@@ -7,11 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
-using FileSystemExtensions;
 using System.IO;
 using System.Diagnostics;
 using System.Collections.Concurrent;
+using FileSystemExtensions;
 
 namespace DirSize
 {
@@ -50,6 +49,7 @@ namespace DirSize
         }
 
         private DirectoryInfo selectedDirectory;
+        private IEnumerable<DirectoryInfo> exclusions;
         private FileInfo currentFile;
         private long fileCount;
         private ConcurrentDictionary<string, DirectoryEntry> entries;
@@ -80,7 +80,7 @@ namespace DirSize
         {
             try
             {
-                foreach (FileInfo file in selectedDirectory.SafeEnumerateFiles("*", SearchOption.AllDirectories))
+                foreach (FileInfo file in selectedDirectory.SafeEnumerateFiles("*", SearchOption.AllDirectories, exclusions))
                 {
                     fileCount++;
                     currentFile = file;
@@ -197,6 +197,7 @@ namespace DirSize
             if (Directory.Exists(folderTextBox.Text))
             {
                 selectedDirectory = new DirectoryInfo(folderTextBox.Text);
+                exclusions = exclusionsTextBox.Text.Split(';').Select(each => new DirectoryInfo(each));
                 scannerWorker.RunWorkerAsync();
             }
         }
