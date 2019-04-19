@@ -61,21 +61,6 @@ namespace DirSize
             updateTimer.Enabled = true;
         }
 
-        private void analyzeButton_Click(object sender, EventArgs e)
-        {
-            selectedDirectory = null;
-            currentFile = null;
-            fileCount = 0;
-            entries = new ConcurrentDictionary<string, DirectoryEntry>(StringComparer.OrdinalIgnoreCase);
-            FolderBrowserDialog dialog = new FolderBrowserDialog();
-            dialog.ShowDialog();
-            if (Directory.Exists(dialog.SelectedPath))
-            {
-                selectedDirectory = new DirectoryInfo(dialog.SelectedPath);
-                scannerWorker.RunWorkerAsync();
-            }
-        }
-
         private void scannerWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             try
