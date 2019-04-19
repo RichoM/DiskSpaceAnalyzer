@@ -81,8 +81,14 @@ namespace DirSize
             finally
             {
                 dirtyGrid = true;
+                currentFile = null;
+
                 string reportFile = WriteResultsToFile();
-                Process.Start(reportFile);
+                var result = MessageBox.Show(string.Format("Results written to: {0}. Open file?", reportFile), "The analysis has finished", MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
+                {
+                    Process.Start(reportFile);
+                }
             }
         }
 
@@ -133,8 +139,6 @@ namespace DirSize
                 writer.Flush();
             }
 
-            MessageBox.Show(string.Format("Results written to: {0}", fileName));
-            currentFile = null;
             return fileName;
         }
 
@@ -175,6 +179,8 @@ namespace DirSize
 
         private void startButton_Click(object sender, EventArgs e)
         {
+            if (scannerWorker.IsBusy) return;
+
             selectedDirectory = null;
             currentFile = null;
             fileCount = 0;
