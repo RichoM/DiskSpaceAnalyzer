@@ -64,6 +64,7 @@ namespace DirSize
         private void scannerWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             Stopwatch sw = new Stopwatch();
+            bool canceled = false;
             try
             {
                 sw.Start();
@@ -77,7 +78,11 @@ namespace DirSize
                         dirtyGrid = true;
                     }
                     catch { /* Ignore */ }
-                    if (scannerWorker.CancellationPending) break;
+                    if (scannerWorker.CancellationPending)
+                    {
+                        canceled = true;
+                        break;
+                    }
                 }
             }
             finally
@@ -87,7 +92,9 @@ namespace DirSize
                 currentFile = null;
 
                 string reportFile = WriteResultsToFile();
-                var result = MessageBox.Show(string.Format("Analysis finished in {0}.\nThe results have been written to: {1}.\nDo you want to open the file?", sw.Elapsed, reportFile), "The analysis has finished", MessageBoxButtons.YesNo);
+                var msg = string.Format("Analysis finished in {0}.\nThe results have been written to: {1}.\nDo you want to open the file?", sw.Elapsed, reportFile);
+                var title = canceled ? "The process was interrupted by the user" : "The process finished successfully";
+                var result = MessageBox.Show(msg, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (result == DialogResult.Yes)
                 {
                     Process.Start(reportFile);
