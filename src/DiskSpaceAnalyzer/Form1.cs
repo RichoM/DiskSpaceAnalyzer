@@ -63,8 +63,10 @@ namespace DirSize
 
         private void scannerWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            Stopwatch sw = new Stopwatch();
             try
             {
+                sw.Start();
                 foreach (FileInfo file in selectedDirectory.SafeEnumerateFiles("*", SearchOption.AllDirectories, exclusions))
                 {
                     fileCount++;
@@ -80,11 +82,12 @@ namespace DirSize
             }
             finally
             {
+                sw.Stop();
                 dirtyGrid = true;
                 currentFile = null;
 
                 string reportFile = WriteResultsToFile();
-                var result = MessageBox.Show(string.Format("Results written to: {0}. Open file?", reportFile), "The analysis has finished", MessageBoxButtons.YesNo);
+                var result = MessageBox.Show(string.Format("Analysis finished in {0}.\nThe results have been written to: {1}.\nDo you want to open the file?", sw.Elapsed, reportFile), "The analysis has finished", MessageBoxButtons.YesNo);
                 if (result == DialogResult.Yes)
                 {
                     Process.Start(reportFile);
